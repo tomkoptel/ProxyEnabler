@@ -36,10 +36,10 @@ jobs:
       - name: Upload Demo APK
         uses: actions/upload-artifact@v1
         with:
-          name: app
+          name: app-demo-debug.apk
           path: app/build/outputs/apk/demo/debug/app-demo-debug.apk
       - name: Upload Full APK
         uses: actions/upload-artifact@v1
         with:
-          name: app
+          name: app-full-debug.apk
           path: app/build/outputs/apk/full/debug/app-full-debug.apk
