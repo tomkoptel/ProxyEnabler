@@ -28,33 +28,25 @@ abstract class GenerateSecurityConfig : DefaultTask() {
             """.trimIndent()
     }
 
-    @get:Input
-    abstract val allowHttpProxy: Property<Boolean>
-
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
     @TaskAction
     fun generate() {
-        val generateConfig = allowHttpProxy.get()
         val flavorDir = outputDirectory.get()
 
-        if (generateConfig) {
-            if (!flavorDir.asFile.exists()) {
-                flavorDir.asFile.mkdirs()
-            }
+        if (!flavorDir.asFile.exists()) {
+            flavorDir.asFile.mkdirs()
+        }
 
-            val resXmlDir = flavorDir.dir("./res/xml")
-            if (!resXmlDir.asFile.exists()) {
-                resXmlDir.asFile.mkdirs()
-            }
-            val securityFile = resXmlDir.file("./$FILE_NAME.xml").asFile
-            if (!securityFile.exists()) {
-                securityFile.createNewFile()
-                securityFile.writeText(ALLOW_PROXY)
-            }
-        } else {
-            project.delete(flavorDir.asFileTree)
+        val resXmlDir = flavorDir.dir("./res/xml")
+        if (!resXmlDir.asFile.exists()) {
+            resXmlDir.asFile.mkdirs()
+        }
+        val securityFile = resXmlDir.file("./$FILE_NAME.xml").asFile
+        if (!securityFile.exists()) {
+            securityFile.createNewFile()
+            securityFile.writeText(ALLOW_PROXY)
         }
     }
 }
