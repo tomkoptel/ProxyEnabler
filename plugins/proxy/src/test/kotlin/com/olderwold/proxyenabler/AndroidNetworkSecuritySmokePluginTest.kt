@@ -1,5 +1,6 @@
 package com.olderwold.proxyenabler
 
+import org.apache.commons.io.FileUtils
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -8,6 +9,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
+
 
 class AndroidNetworkSecuritySmokePluginTest {
     @get:Rule
@@ -15,9 +18,9 @@ class AndroidNetworkSecuritySmokePluginTest {
 
     @Before
     fun setupProject() {
-        val buildGradle = testProjectDir.newFile("build.gradle")
-        buildGradle.writeText(
-            """
+        testProjectDir.newFile("build.gradle")
+            .writeText(
+                """
             buildscript {
                 repositories {
                     google()
@@ -29,7 +32,6 @@ class AndroidNetworkSecuritySmokePluginTest {
             }
             plugins {
                 id 'com.android.application'
-                id 'com.olderwold.proxyenabler'
             }
             repositories {
                 google()
@@ -40,7 +42,7 @@ class AndroidNetworkSecuritySmokePluginTest {
                 buildToolsVersion("30.0.2")
 
                 defaultConfig {
-                    applicationId = "com.dummy.android.app"
+                    applicationId = "com.olderwold.dummy"
 
                     minSdkVersion(23)
                     targetSdkVersion(30)
@@ -48,29 +50,36 @@ class AndroidNetworkSecuritySmokePluginTest {
                     versionName = "1.0"
                 }
             }
+            dependencies {
+                implementation 'androidx.appcompat:appcompat:1.2.0'
+                implementation 'com.google.android.material:material:1.3.0'
+            }
             """.trimIndent()
-        )
+            )
+        testProjectDir.newFile("gradle.properties")
+            .writeText(
+                """
+            org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+            android.useAndroidX=true
+            android.enableJetifier=false
+            kotlin.code.style=official
+            """.trimIndent()
+            )
+        val classLoader = javaClass.classLoader
+        val srcDir = File(classLoader.getResource("src").file)
+        val destDir = File(testProjectDir.root, "src")
+        destDir.mkdirs()
 
-        with(testProjectDir) {
-            newFolder("src", "main")
-            newFile("src/main/AndroidManifest.xml")
-        }.writeText(
-            """
-            <?xml version="1.0" encoding="utf-8"?>
-            <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-                package="com.dummy.android.app">
-            </manifest>
-            """.trimIndent()
-        )
+        FileUtils.copyDirectory(srcDir, destDir)
     }
 
     @Test
     fun `test task with allow proxy env`() {
-        val result = build(task = "assembleDebug", args =  listOf("-PprojectAllowHttpProxy=true"))
+        val result = build(task = "assembleDebug", args = listOf("-PprojectAllowHttpProxy=true"))
         assertEquals(TaskOutcome.SUCCESS, result.task(":assembleDebug")?.outcome)
     }
 
-    private fun build(task: String,args: List<String>): BuildResult {
+    private fun build(task: String, args: List<String>): BuildResult {
         val mergedArgs = listOf(listOf(task), args).flatten()
         return GradleRunner.create()
             .withProjectDir(testProjectDir.root)

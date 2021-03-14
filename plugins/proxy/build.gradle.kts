@@ -20,6 +20,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:4.1.2")
 
     testImplementation(gradleTestKit())
+    testImplementation("commons-io:commons-io:2.8.0")
     testImplementation("junit:junit:4.13.2")
 }
 
