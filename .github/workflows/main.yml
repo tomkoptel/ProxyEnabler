@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build debug APK
-        run: bash ./gradlew :app:assembleDebug -PprojectAllowHttpProxy=true --stacktrace
+        run: bash ./gradlew :app:assembleDemoDebug :app:assembleFullDebug -PprojectAllowHttpProxy=true --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:

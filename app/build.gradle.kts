@@ -36,6 +36,19 @@ android {
         textReport = true
         textOutput("stdout")
     }
+    flavorDimensions("version")
+    productFlavors {
+        create("demo") {
+            dimension("version")
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+        }
+        create("full") {
+            dimension("version")
+            applicationIdSuffix = ".full"
+            versionNameSuffix = "-full"
+        }
+    }
 }
 
 dependencies {
