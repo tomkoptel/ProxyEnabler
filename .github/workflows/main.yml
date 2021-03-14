@@ -33,8 +33,13 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build debug APK
         run: bash ./gradlew :app:assembleDemoDebug :app:assembleFullDebug -PprojectAllowHttpProxy=true --stacktrace
-      - name: Upload APK
+      - name: Upload Demo APK
         uses: actions/upload-artifact@v1
         with:
           name: app
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/demo/debug/app-demo-debug.apk
+      - name: Upload Full APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/apk/full/debug/app-full-debug.apk
