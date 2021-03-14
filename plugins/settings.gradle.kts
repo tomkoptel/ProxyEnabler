@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "build-src"
+rootProject.name = "plugins"
 
 include("proxy")
